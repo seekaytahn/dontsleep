@@ -81,8 +81,16 @@ class AppState: ObservableObject {
 // Shared instance accessible across the app's scenes
 let appState = AppState()
 
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        // Hide from Dock - makes app menu bar only
+        NSApp.setActivationPolicy(.accessory)
+    }
+}
+
 @main
 struct CaffeinateApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var state = appState
     
     var body: some Scene {
