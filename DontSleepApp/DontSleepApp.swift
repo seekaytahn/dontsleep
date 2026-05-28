@@ -7,15 +7,15 @@ class AppState: ObservableObject {
     @Published var endTime: Date?
     private var currentTask: Process?
     
-    // Check if caffeinate process is actually running
-    var isCaffeinateActuallyRunning: Bool {
+    // Check if prevent sleep process is actually running
+    var isPreventSleepRunning: Bool {
         guard let task = currentTask else { return false }
         return task.isRunning
     }
     
-    func startCaffeinate(minutes: Int) {
+    func startPreventSleep(minutes: Int) {
         // Stop any existing task
-        stopCaffeinate()
+        stopPreventSleep()
         
         self.isRunning = true
         self.endTime = Date().addingTimeInterval(TimeInterval(minutes * 60))
@@ -46,7 +46,7 @@ class AppState: ObservableObject {
         }
     }
     
-    func stopCaffeinate() {
+    func stopPreventSleep() {
         currentTask?.terminate()
         currentTask = nil
         isRunning = false
@@ -54,7 +54,7 @@ class AppState: ObservableObject {
     }
     
     // Check system for any running caffeinate processes
-    func checkSystemForCaffeinate() -> Bool {
+    func checkSystemForPreventSleep() -> Bool {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
         task.arguments = ["caffeinate"]
@@ -89,23 +89,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct CaffeinateApp: App {
+struct DontSleepApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var state = appState
     
     var body: some Scene {
         MenuBarExtra(
-            state.isRunning ? "Caffeinate ⏳" : "Caffeinate",
-            systemImage: state.isRunning ? "mug.fill" : "mug"
+            state.isRunning ? "DontSleep ⏳" : "DontSleep",
+            systemImage: state.isRunning ? "moon.zzz.fill" : "moon.zzz"
         ) {
-            CaffeinateMenu()
+            DontSleepMenu()
                 .environmentObject(state)
         }
         .menuBarExtraStyle(.window)
     }
 }
 
-struct CaffeinateMenu: View {
+struct DontSleepMenu: View {
     @EnvironmentObject var state: AppState
     @State private var customMinutes: String = ""
     @State private var showCustomInput: Bool = false
@@ -119,16 +119,16 @@ struct CaffeinateMenu: View {
     
     var body: some View {
         VStack(spacing: 10) {
-            Text("Caffeinate")
+            Text("DontSleep")
                 .font(.headline)
             
             // Status indicator
             if state.isRunning {
                 HStack {
                     Circle()
-                        .fill(state.isCaffeinateActuallyRunning ? Color.green : Color.red)
+                        .fill(state.isPreventSleepRunning ? Color.green : Color.red)
                         .frame(width: 8, height: 8)
-                    Text(state.isCaffeinateActuallyRunning ? "Active" : "Stopped")
+                    Text(state.isPreventSleepRunning ? "Active" : "Stopped")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -143,14 +143,14 @@ struct CaffeinateMenu: View {
             
             if state.isRunning {
                 Button("Stop Timer") {
-                    state.stopCaffeinate()
+                    state.stopPreventSleep()
                 }
                 .foregroundColor(.red)
                 .frame(maxWidth: .infinity, alignment: .center)
             } else {
                 ForEach(durations, id: \.name) { duration in
                     Button(duration.name) {
-                        state.startCaffeinate(minutes: duration.minutes)
+                        state.startPreventSleep(minutes: duration.minutes)
                     }
                     .frame(maxWidth: .infinity, alignment: .center)
                 }
@@ -179,7 +179,7 @@ struct CaffeinateMenu: View {
                             .focused($isTextFieldFocused)
                             .onSubmit {
                                 if let minutes = Int(customMinutes), minutes > 0 {
-                                    state.startCaffeinate(minutes: minutes)
+                                    state.startPreventSleep(minutes: minutes)
                                     customMinutes = ""
                                     showCustomInput = false
                                 }
@@ -187,7 +187,7 @@ struct CaffeinateMenu: View {
                         
                         Button("Start") {
                             if let minutes = Int(customMinutes), minutes > 0 {
-                                state.startCaffeinate(minutes: minutes)
+                                state.startPreventSleep(minutes: minutes)
                                 customMinutes = ""
                                 showCustomInput = false
                             }
@@ -202,7 +202,7 @@ struct CaffeinateMenu: View {
             
             Button("Quit") {
                 // Stop caffeinate process before quitting
-                state.stopCaffeinate()
+                state.stopPreventSleep()
                 NSApp.terminate(nil)
             }
             .frame(maxWidth: .infinity, alignment: .center)
