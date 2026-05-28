@@ -1,169 +1,63 @@
-# ☕ Caffeinate
+# DontSleep
 
-A simple, elegant macOS menu bar app to prevent your Mac from sleeping. Built with SwiftUI.
-
-![macOS](https://img.shields.io/badge/macOS-13.0+-blue)
-![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
+A simple macOS menu bar app that prevents your Mac from going to sleep for a specified duration.
 
 ## Features
 
-✨ **Simple & Clean Interface** - Lives in your menu bar, out of your way
-
-⏱️ **Preset Timers** - Quick access to 15, 30, and 60 minute durations
-
-🎯 **Custom Duration** - Set any duration you need in minutes
-
-🟢 **Live Status Indicator** - See at a glance when caffeinate is active
-
-⏰ **End Time Display** - Know exactly when your timer will finish
-
-🛑 **Easy Stop** - Cancel the timer anytime
-
-🎨 **Visual Feedback** - Menu bar icon changes when active (☕ → ☕️)
-
-## Screenshots
-
-### Idle State
-```
-☕ Caffeinate
-├─ Caffeinate
-├─ [15 minutes]
-├─ [30 minutes]
-├─ [60 minutes]
-├─ [Custom Duration...]
-├─ ─────────────
-└─ [Quit]
-```
-
-### Running State
-```
-☕️ Caffeinate ⏳
-├─ Caffeinate
-├─ 🟢 Active • Ends at 3:45 PM
-├─ [Stop Timer]
-├─ ─────────────
-└─ [Quit]
-```
-
-## Installation
-
-### Build from Source
-
-1. Clone this repository:
-   ```bash
-   git clone git@github.com:seekaytahn/caffeinateapp.git
-   cd caffeinateapp
-   ```
-
-2. Open `CaffeinateApp.xcodeproj` in Xcode
-
-3. Build and run (⌘R)
-
-4. Optional: Archive and export the app to your Applications folder
-
-## Usage
-
-1. **Launch the app** - It appears in your menu bar as a coffee mug icon ☕
-
-2. **Start a timer** - Click the icon and select a duration:
-   - Choose from preset options (15, 30, or 60 minutes)
-   - Or click "Custom Duration..." to enter any number of minutes
-
-3. **Monitor status** - When active:
-   - Menu bar icon fills in (☕️) and shows an hourglass (⏳)
-   - Green dot shows "Active" status
-   - End time is displayed
-
-4. **Stop early** - Click "Stop Timer" to end before the timer finishes
-
-5. **Quit the app** - Click "Quit" (automatically stops any running timer)
+- 🌙 **Menu Bar Only** - Lives in your menu bar, no Dock icon
+- ⏱️ **Quick Timers** - Preset durations: 15, 30, or 60 minutes
+- ⚙️ **Custom Duration** - Set any custom duration in minutes
+- 🟢 **Status Indicator** - Visual feedback showing when prevent-sleep is active
+- 🕐 **End Time Display** - Shows when the timer will end
+- 🛑 **Easy Stop** - Stop the timer anytime with one click
 
 ## How It Works
 
-This app is a wrapper around macOS's built-in `caffeinate` command-line utility. When you start a timer:
+DontSleep uses macOS's built-in `caffeinate` command to prevent your system from sleeping. This is the same utility Apple provides with macOS, ensuring safe and reliable operation.
 
-```bash
-/usr/bin/caffeinate -t <seconds>
-```
+## Usage
 
-The app manages the process and automatically cleans up when:
-- The timer naturally expires
-- You manually stop the timer
-- You quit the app
+1. Click the moon icon (🌙) in your menu bar
+2. Select a preset duration or choose "Custom Duration..." for your own timing
+3. The icon changes to indicate active status (⏳)
+4. Your Mac will stay awake for the specified duration
+5. Click "Stop Timer" to end early, or let it finish automatically
 
 ## Requirements
 
-- macOS 13.0 (Ventura) or later
-- No additional permissions required
+- macOS 13.0 or later
+- No additional dependencies required
+
+## Installation
+
+### From Source
+
+1. Clone this repository:
+   ```bash
+   git clone git@github.com:seekaytahn/dontsleep.git
+   ```
+2. Open `DontSleep.xcodeproj` in Xcode
+3. Build and run (⌘R)
+
+### Running the App
+
+The app will appear only in your menu bar. Look for the moon icon (🌙) in the top-right area of your screen.
 
 ## Technical Details
 
-- **Framework**: SwiftUI
-- **Architecture**: MVVM with ObservableObject
-- **Process Management**: Uses `Process` to spawn and monitor `caffeinate`
-- **UI Pattern**: MenuBarExtra with window style
-- **State Management**: Combine with @Published properties
-
-## Project Structure
-
-```
-CaffeinateApp/
-├── CaffeinateApp.swift      # Main app file
-│   ├── AppState             # Observable state management
-│   ├── CaffeinateApp        # App entry point
-│   └── CaffeinateMenu       # UI view
-└── README.md                # This file
-```
-
-## Code Highlights
-
-### State Management
-```swift
-class AppState: ObservableObject {
-    @Published var isRunning = false
-    @Published var endTime: Date?
-    private var currentTask: Process?
-}
-```
-
-### Process Lifecycle
-```swift
-task.terminationHandler = { [weak self] _ in
-    DispatchQueue.main.async {
-        self?.isRunning = false
-        self?.currentTask = nil
-        self?.endTime = nil
-    }
-}
-```
-
-## Contributing
-
-Contributions are welcome! Here are some ideas for enhancements:
-
-- [ ] Add notifications when timer completes
-- [ ] Remember last used custom duration
-- [ ] Add keyboard shortcuts
-- [ ] Display remaining time countdown
-- [ ] Support for "indefinite" mode (no timer)
-- [ ] Prevent display sleep option
-- [ ] System sleep prevention options (disk, system, etc.)
+- Built with **SwiftUI** and **AppKit**
+- Uses `MenuBarExtra` for menu bar integration
+- Implements `Process` API to manage the `caffeinate` command
+- Menu bar only app (uses `.accessory` activation policy)
 
 ## License
 
-MIT License - feel free to use this code for your own projects!
+[Add your license here]
 
-## Acknowledgments
+## Author
 
-- Built with ❤️ using SwiftUI
-- Uses macOS's built-in `caffeinate` utility
-- Inspired by the need for a simple, native caffeinate GUI
+[Add your name/info here]
 
-## Support
+## Contributing
 
-If you find this useful, give it a ⭐️ on GitHub!
-
----
-
-**Note**: This app prevents your Mac from sleeping but does not prevent the display from sleeping. If you need to keep the display awake, use `caffeinate -d` flag (would require code modification).
+Contributions are welcome! Please feel free to submit a Pull Request.
